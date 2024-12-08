@@ -1,0 +1,20 @@
+---
+interface Props {
+  data: any;
+}
+
+const { data } = Astro.props;
+---
+
+<!-- Render components based on the data -->
+{data.map(component => {
+  switch (component.__typename) {
+    case 'ProductList':
+      return <ProductList {...component} />;
+    case 'ProductHighlight':
+      return <ProductHighlight {...component} />;
+    // Add other cases as needed
+    default:
+      return <NoComponentFile __typename={component.__typename} />;
+  }
+})}

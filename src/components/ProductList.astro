@@ -1,16 +1,64 @@
 ---
-const products = [
-  { id: 1, name: 'Product 1', price: '$10' },
-  { id: 2, name: 'Product 2', price: '$20' },
-  { id: 3, name: 'Product 3', price: '$30' },
-];
+import Card from "./Card.astro";
+
+interface Props {
+  __typename: string;
+  title: string;
+  relatedProductList: {
+    relatedProducts: {
+      products: [
+        {
+          title: string;
+          image: {
+            url: string;
+          };
+          url: string;
+          cta: string;
+        },
+      ];
+    };
+  };
+}
+
+const { __typename, title, relatedProductList } = Astro.props;
+
+const products = relatedProductList?.relatedProducts?.products.map(
+  (product: any) => {
+    return {
+      id: product.id,
+      image: {
+        url: product.images[0].url,
+      },
+      title: product.name,
+      slug: product.slug,
+    };
+  }
+);
 ---
 
-<ul>
-  {products.map(product => (
-    <li>
-      <h2>{product.name}</h2>
-      <p>{product.price}</p>
-    </li>
-  ))}
-</ul>
+<section class="bg-tertiary">
+  {
+    title ? (
+      <h3 class="text-5xl pt-12 mb-12 font-bold font-title text-center">
+        {title}
+      </h3>
+    ) : null
+  }
+
+  <div class="grid gap-6 mx-12 pb-32 md:grid-cols-2 lg:gap-12">
+    {
+      products &&
+        products.map((product) => {
+          return (
+            <Card
+              __typename={__typename}
+              image={product.image}
+              title={product.title}
+              url={`/pdp/${product.slug}`}
+              cta="BUY NOW"
+            />
+          );
+        })
+    }
+  </div>
+</section>
